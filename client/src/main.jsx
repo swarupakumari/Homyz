@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       domain="dev-ig7i51uf0c4fxrbb.us.auth0.com"
       clientId="Xc7mUCdeL1gidaO9L16iVIefUpKJYOib"
       authorizationParams={{
-        redirect_uri: "http://localhost:5174",
+        redirect_uri: "https://homyz-frontend.vercel.app",
       }}
       audience="http://localhost:8000"
       scope="openid profile email"
