@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Hero.css";
 import CountUp from "react-countup";
 import { motion } from "framer-motion";
-import SearchBar from "../SearchBar/SearchBar";
 
 export const Hero = () => {
+  const [filter, setFilter] = useState(""); // State to manage search input
+
+  const handleSearch = () => {
+    // Log or handle the search action
+    console.log("Searching for:", filter); // For now, just logs the filter value
+  };
+
   return (
     <section className="hero-wrapper">
       <div className="paddings innerWidth flexCenter hero-container">
@@ -30,8 +36,6 @@ export const Hero = () => {
               Forget all difficulties in finding a residence for you
             </span>
           </div>
-
-          <SearchBar></SearchBar>
 
           <div className="flexCenter stats">
             <div className="flexColCenter stat">
