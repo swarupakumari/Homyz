@@ -39,3 +39,23 @@ jspm_packages
 
 
 .env
+# Claude Code
+.claude/
+
+# Environment files
+.env.*
+!.env.example
+
+# Build output
+dist/
+
+# Vercel
+.vercel/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 
 import { prisma } from "../config/prismaConfig.js";
+import { searchResidencies as runSearch } from "../services/searchService.js";
 
 export const createResidency = asyncHandler(async (req, res) => {
     
@@ -68,4 +69,47 @@ export const getResidency = asyncHandler(async (req, res) => {
   } catch (err) {
     throw new Error(err.message);
   }
+});
+
+// Parses an optional numeric query param; returns undefined when absent,
+// or throws so the caller can respond 400 when the value isn't a number.
+const parseOptionalNumber = (value, fieldName) => {
+  if (value === undefined || value === "") return undefined;
+  const parsed = Number(value);
+  if (Number.isNaN(parsed)) {
+    throw new Error(`Invalid value for '${fieldName}': must be a number`);
+  }
+  return parsed;
+};
+
+// GET /api/residency/search — backend-driven property search.
+// Replaces the previous approach of fetching every residency and filtering
+// client-side; all filtering now happens in the database via searchService.
+export const searchResidencies = asyncHandler(async (req, res) => {
+  const { city, country, minPrice, maxPrice, bedrooms, bathrooms, keyword } =
+    req.query;
+
+  let filters;
+  try {
+    filters = {
+      city,
+      country,
+      keyword,
+      minPrice: parseOptionalNumber(minPrice, "minPrice"),
+      maxPrice: parseOptionalNumber(maxPrice, "maxPrice"),
+      bedrooms: parseOptionalNumber(bedrooms, "bedrooms"),
+      bathrooms: parseOptionalNumber(bathrooms, "bathrooms"),
+    };
+  } catch (err) {
+    return res.status(400).json({ success: false, message: err.message });
+  }
+
+  const { data, total } = await runSearch(filters);
+
+  res.status(200).json({
+    success: true,
+    total,
+    filters,
+    data,
+  });
 });

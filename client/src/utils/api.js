@@ -23,6 +23,57 @@ export const getAllProperties = async () => {
   }
 };
 
+export const searchProperties = async (filters = {}) => {
+  try {
+    // Drop empty/undefined params so the query string stays clean
+    // (e.g. no "?city=&country=" on an unfiltered search).
+    const params = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([, value]) => value !== undefined && value !== null && value !== ""
+      )
+    );
+
+    const response = await api.get("/residency/search", {
+      params,
+      timeout: 10 * 1000,
+    });
+
+    if (response.status === 400 || response.status === 500) {
+      throw response.data;
+    }
+    return response.data;
+  } catch (error) {
+    toast.error("Something went wrong while searching properties");
+    throw error;
+  }
+};
+
+// Note: intentionally does NOT toast on error like the other calls here —
+// the AI search UI shows errors inline as chat messages, so the raw error
+// is left for useAiSearch to translate into a friendly in-chat message.
+export const aiSearchProperties = async (prompt) => {
+  const response = await api.post(
+    "/ai/search",
+    { prompt },
+    { timeout: 25 * 1000 }
+  );
+  return response.data;
+};
+
+// Sprint 4 — Agentic AI Property Advisor. `previousQueryAnalysis` is the
+// exact `queryAnalysis` object from the prior response in this chat
+// session (or null on the first turn); passing it back lets the backend
+// planner treat this prompt as a refinement instead of a fresh search.
+// Intentionally does NOT toast on error, same reasoning as aiSearchProperties.
+export const getAgentAdvice = async (prompt, previousQueryAnalysis = null) => {
+  const response = await api.post(
+    "/agent/advice",
+    { prompt, previousQueryAnalysis },
+    { timeout: 40 * 1000 }
+  );
+  return response.data;
+};
+
 export const getProperty = async (id) => {
   try {
     const response = await api.get(`/residency/${id}`, {

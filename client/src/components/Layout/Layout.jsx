@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Header from "../Header/Header";
 import { Footer } from "../Footer/Footer";
 import { Outlet } from "react-router-dom";
@@ -8,10 +8,14 @@ import { useMutation } from "react-query";
 import { createUser } from "../../utils/api";
 import useFavourites from "../../hooks/useFavourites";
 import useBookings from "../../hooks/useBookings";
+import AiSearchButton from "../AiSearch/AiSearchButton";
+import AiSearchModal from "../AiSearch/AiSearchModal";
 
 const Layout = () => {
   useFavourites();
   useBookings();
+
+  const [isAiSearchOpen, setIsAiSearchOpen] = useState(false);
 
   const { isAuthenticated, user, getAccessTokenWithPopup } = useAuth0(); // Destructure getAccessTokenWithPopup here
   const { setUserDetails } = useContext(UserDetailContext);
@@ -51,6 +55,15 @@ const Layout = () => {
         <Outlet />
       </div>
       <Footer />
+
+      <AiSearchButton
+        isOpen={isAiSearchOpen}
+        onClick={() => setIsAiSearchOpen(true)}
+      />
+      <AiSearchModal
+        isOpen={isAiSearchOpen}
+        onClose={() => setIsAiSearchOpen(false)}
+      />
     </>
   );
 };
